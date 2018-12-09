@@ -103,14 +103,6 @@ resource "aws_route53_record" "www" {
   records = ["${element(aws_instance.DR_ec2.*.public_ip,count.index)}"]
 }
 
-resource "aws_internet_gateway" "gw" {
-  vpc_id = "${aws_vpc.default.id}"
-
-  tags {
-    Name = "main"
-  }
-}
-
 resource "aws_vpc" "default" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support   = true
@@ -132,6 +124,10 @@ resource "aws_subnet" "outsubnet" {
   }
 }
 
+resource "aws_internet_gateway" "gw" {
+  count = 3
+  vpc_id = "${element(aws_subnet.outsubnet.*.id,count.index)}"
+}
 resource "aws_volume_attachment" "this_ec2" {
   count = "${length(var.azs_var)}"
   device_name = "/dev/sdh"
