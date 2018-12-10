@@ -125,9 +125,22 @@ resource "aws_subnet" "outsubnet" {
 }
 
 resource "aws_internet_gateway" "gw" {
-  count = 3
-  vpc_id = "${element(aws_subnet.outsubnet.*.id,count.index)}"
+  vpc_id = "${aws_vpc.default.id}"
 }
+
+resource "aws_route_table" "public_routetable" {
+  vpc_id = "${aws_vpc.default.id}"
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.gw.id}"
+  }
+}
+
+resource "aws_main_route_table_association" "a" {
+  vpc_id         = "${aws_vpc.default.id}"
+  route_table_id = "${aws_route_table.public_routetable.id}"
+}
+
 resource "aws_volume_attachment" "this_ec2" {
   count = "${length(var.azs_var)}"
   device_name = "/dev/sdh"
