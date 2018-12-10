@@ -10,3 +10,5 @@ Right now:
 to create inventory file for Ansible, after terraform apply use terraform output > inventory
 
 For provisioning via ansible ansible-playbook -i inventory --private-key <path to yours pem file>
+  
+Added new Dockerfile for sample MongoDB (no cluster)
